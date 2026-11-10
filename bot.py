@@ -5,13 +5,11 @@ import requests
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from google import genai
 
-# შენი გასაღებები
 GEMINI_API_KEY = "AQ.Ab8RN6KDWfur32HZA_0nLjxBKcRmodhl6wbih_kX2pPuBZxpdA"
 TELEGRAM_BOT_TOKEN = "9114655833:AAFG24T_td4hNYXP7HBQ4z-PDiHaHNOYTuA"
 
 client = genai.Client(api_key=GEMINI_API_KEY)
 
-# 1. პატარა ვებ-სერვერი, რომ Render-მა პორტი დაინახოს და არ გაითიშოს
 class SimpleHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
@@ -49,6 +47,9 @@ def process_ai_command(command_text):
     return response.text
 
 def main():
+    # ძველი ვებჰუქის გაწმენდა, რომ შეტყობინებებმა თავისუფლად იმოძრაოს
+    requests.get(f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/deleteWebhook")
+    
     print("AI მენეჯერი ჩაირთო და მზადაა შენს ბრძანებებზე სამუშაოდ...")
     offset = None
     while True:
@@ -72,9 +73,6 @@ def main():
         time.sleep(2)
 
 if __name__ == "__main__":
-    # ვებ-სერვერს ვრთავთ ცალკე ფონურ ნაკადში (Thread-ში), რომ პორტი დაიკავოს
     server_thread = threading.Thread(target=run_web_server, daemon=True)
     server_thread.start()
-    
-    # ვრთავთ მთავარ ბოტს
     main()
